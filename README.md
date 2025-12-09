@@ -95,3 +95,10 @@ A API estará disponível em:
 npm run build
 npm run start
 ```
+
+---
+
+## 🌐 Deploy
+O backend está disponível em produção através do Render:  
+👉 [ecommerce-backend-qfb6.onrender.com](https://ecommerce-backend-qfb6.onrender.com)
+```
