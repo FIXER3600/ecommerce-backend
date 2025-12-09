@@ -11,7 +11,7 @@ Ele foi desenvolvido em **Node.js** com **Express** e utiliza **JWT** para auten
 - **TypeScript**  
 - **JWT (JSON Web Token)** para autenticação  
 - **Multer** (upload de arquivos CSV)  
-- **PostgreSQL / MongoDB** (dependendo da configuração do banco)  
+- **PostgreSQL** 
 - **bcrypt** para hash de senhas  
 
 ---
@@ -101,3 +101,8 @@ npm run start
 ## 🌐 Deploy
 O backend está disponível em produção através do Render:  
 👉 [ecommerce-backend-qfb6.onrender.com](https://ecommerce-backend-qfb6.onrender.com)
+
+## 📖 Documentação da API
+A documentação completa dos endpoints está disponível no Postman:  
+👉 [Documentação da API](https://documenter.getpostman.com/view/44513432/2sB3dQv9VA)
+```
