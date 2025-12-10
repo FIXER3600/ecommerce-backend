@@ -2,17 +2,10 @@ import { deactivateSeller, getDashboard } from "../service/seller.service.js";
 
 export const getDashboardController = async (req, res, next) => {
   try {
-    let sellerId = req.sellerId;
-    if (!sellerId && req.userId) {
-      const seller = await prisma.sellerProfile.findUnique({
-        where: { userId: req.userId },
-        select: { id: true },
-      });
-      sellerId = seller?.id;
-    }
+    const { sellerId } = req.query;
 
     if (!sellerId) {
-      return res.status(403).json({ error: "Seller not found or not authorized" });
+      return res.status(400).json({ error: "sellerId é obrigatório" });
     }
 
     const dashboard = await getDashboard(sellerId);
@@ -21,6 +14,7 @@ export const getDashboardController = async (req, res, next) => {
     next(err);
   }
 };
+
 
 
 export const deactivateSellerController = async (req, res, next) => {
