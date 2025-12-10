@@ -106,3 +106,8 @@ O backend está disponível em produção através do Render:
 A documentação completa dos endpoints está disponível no Postman:  
 👉 [Documentação da API](https://documenter.getpostman.com/view/44513432/2sB3dQv9VA)
 
+⚠️ **AVISO IMPORTANTE**  
+O modelo **gratuito do Render** entra em modo *sleep* quando não está sendo utilizado.  
+Isso significa que, ao fazer a primeira requisição depois de um tempo de inatividade, o servidor pode demorar alguns segundos/minutos para iniciar novamente.  
+Esse comportamento é **normal** — basta aguardar que o Render inicialize e comece a processar a requisição.
+
