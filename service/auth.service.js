@@ -3,21 +3,39 @@ import jwt from "jsonwebtoken";
 
 export async function signUp(data) {
   const existing = await prisma.user.findUnique({ where: { email: data.email } });
-  if (existing) throw new Error('Email already in use');
+  if (existing) throw new Error("Email already in use");
 
   const passwordHash = await bcrypt.hash(data.password, 10);
+
   const user = await prisma.user.create({
     data: {
       email: data.email,
       passwordHash,
       role: data.role,
-      sellerProfile: data.role === 'SELLER' ? { create: { storeName: data.storeName || 'Minha Loja' } } : undefined,
-      customerProfile: data.role === 'CLIENT' ? { create: {} } : undefined,
+      sellerProfile:
+        data.role === "SELLER"
+          ? { create: { storeName: data.storeName || "Minha Loja" } }
+          : undefined,
+      customerProfile: data.role === "CLIENT" ? { create: {} } : undefined,
+    },
+    include: {
+      sellerProfile: true,
     },
   });
 
-  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return {
+    token,
+    role: user.role,
+    sellerId: user.role === "SELLER" ? user.sellerProfile?.id : null,
+  };
 }
+
 
 export async function signIn(data) {
   const user = await prisma.user.findUnique({ where: { email: data.email } });
