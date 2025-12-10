@@ -18,10 +18,16 @@ export async function signUp(data) {
           : undefined,
       customerProfile: data.role === "CLIENT" ? { create: {} } : undefined,
     },
-    include: {
-      sellerProfile: true,
-    },
   });
+
+  let sellerId = null;
+  if (user.role === "SELLER") {
+    const seller = await prisma.sellerProfile.findUnique({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+    sellerId = seller?.id ?? null;
+  }
 
   const token = jwt.sign(
     { id: user.id, role: user.role },
@@ -32,9 +38,10 @@ export async function signUp(data) {
   return {
     token,
     role: user.role,
-    sellerId: user.role === "SELLER" ? user.sellerProfile?.id : null,
+    sellerId,
   };
 }
+
 
 
 export async function signIn(data) {
