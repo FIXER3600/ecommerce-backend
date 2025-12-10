@@ -38,14 +38,31 @@ export async function signUp(data) {
 
 
 export async function signIn(data) {
-  const user = await prisma.user.findUnique({ where: { email: data.email } });
-  if (!user || !user.isActive || user.deletedAt) throw new Error('Invalid credentials');
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+    include: { sellerProfile: true },
+  });
+
+  if (!user || !user.isActive || user.deletedAt) {
+    throw new Error("Invalid credentials");
+  }
 
   const ok = await bcrypt.compare(data.password, user.passwordHash);
-  if (!ok) throw new Error('Invalid credentials');
+  if (!ok) throw new Error("Invalid credentials");
 
-  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return {
+    token,
+    role: user.role,
+    sellerId: user.role === "SELLER" ? user.sellerProfile?.id : null,
+  };
 }
+
 
 import { prisma } from '../config/prisma.js';
 
