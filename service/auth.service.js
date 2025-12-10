@@ -42,12 +42,9 @@ export async function signUp(data) {
   };
 }
 
-
-
 export async function signIn(data) {
   const user = await prisma.user.findUnique({
     where: { email: data.email },
-    include: { sellerProfile: true },
   });
 
   if (!user || !user.isActive || user.deletedAt) {
@@ -56,6 +53,15 @@ export async function signIn(data) {
 
   const ok = await bcrypt.compare(data.password, user.passwordHash);
   if (!ok) throw new Error("Invalid credentials");
+
+  let sellerId = null;
+  if (user.role === "SELLER") {
+    const seller = await prisma.sellerProfile.findUnique({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+    sellerId = seller?.id ?? null;
+  }
 
   const token = jwt.sign(
     { id: user.id, role: user.role },
@@ -66,9 +72,10 @@ export async function signIn(data) {
   return {
     token,
     role: user.role,
-    sellerId: user.role === "SELLER" ? user.sellerProfile?.id : null,
+    sellerId,
   };
 }
+
 
 
 import { prisma } from '../config/prisma.js';
