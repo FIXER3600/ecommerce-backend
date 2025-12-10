@@ -1,16 +1,26 @@
 import { prisma } from '../config/prisma.js';
 
-export async function getDashboard(userId) {
+export async function getDashboard(sellerId) {
   const seller = await prisma.sellerProfile.findUnique({
-    where: { userId },
+    where: { id: sellerId }, 
     include: { products: true },
   });
-  if (!seller) throw new Error('Seller not found');
 
-  const totalRevenue = seller.products.reduce((sum, p) => sum + Number(p.price) * p.totalSold, 0);
+  if (!seller) throw new Error("Seller not found");
+
+  const totalRevenue = seller.products.reduce(
+    (sum, p) => sum + Number(p.price) * p.totalSold,
+    0
+  );
+
   const totalSold = seller.products.reduce((sum, p) => sum + p.totalSold, 0);
-  const totalProducts = await prisma.product.count();
+
+  const totalProducts = await prisma.product.count({
+    where: { sellerId },
+  });
+
   const bestSeller = await prisma.product.findFirst({
+    where: { sellerId },
     orderBy: { totalSold: "desc" },
     select: { id: true, name: true, totalSold: true, price: true },
   });
@@ -24,6 +34,7 @@ export async function getDashboard(userId) {
     bestSeller,
   };
 }
+
 
 export async function deactivateSeller(userId) {
   return prisma.user.update({
